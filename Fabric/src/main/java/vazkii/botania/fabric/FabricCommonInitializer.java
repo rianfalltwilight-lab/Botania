@@ -126,6 +126,7 @@ import vazkii.botania.common.helper.PlayerHelper;
 import vazkii.botania.common.impl.BotaniaAPIImpl;
 import vazkii.botania.common.impl.corporea.DefaultCorporeaMatchers;
 import vazkii.botania.common.impl.mana.DefaultManaItemImpl;
+import vazkii.botania.common.impl.mana.DeferredManaCharge;
 import vazkii.botania.common.integration.corporea.CorporeaNodeDetectors;
 import vazkii.botania.common.internal_caps.BotaniaDataAttachments;
 import vazkii.botania.common.internal_caps.ItemSources;
@@ -325,6 +326,7 @@ public class FabricCommonInitializer implements ModInitializer {
 		ServerLifecycleEvents.SERVER_STARTED.register(this::serverAboutToStart);
 		ServerLifecycleEvents.SERVER_STOPPING.register(this::serverStopping);
 		ServerPlayConnectionEvents.DISCONNECT.register(((handler, server) -> FlugelTiaraItem.playerLoggedOut(handler.player)));
+		ServerPlayConnectionEvents.DISCONNECT.register(((handler, server) -> DeferredManaCharge.onPlayerLoggedOut(handler.player)));
 		ServerPlayerEvents.AFTER_RESPAWN.register(ResoluteIvyItem::onPlayerRespawn);
 		ServerTickEvents.END_WORLD_TICK.register(CommonTickHandler::onTick);
 		ServerTickEvents.END_WORLD_TICK.register(GrassSeedsItem::onTickEnd);

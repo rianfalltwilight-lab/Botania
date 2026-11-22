@@ -124,6 +124,7 @@ import vazkii.botania.common.helper.PlayerHelper;
 import vazkii.botania.common.impl.BotaniaAPIImpl;
 import vazkii.botania.common.impl.corporea.DefaultCorporeaMatchers;
 import vazkii.botania.common.impl.mana.DefaultManaItemImpl;
+import vazkii.botania.common.impl.mana.DeferredManaCharge;
 import vazkii.botania.common.integration.corporea.CorporeaNodeDetectors;
 import vazkii.botania.common.internal_caps.ItemSources;
 import vazkii.botania.common.item.*;
@@ -341,6 +342,7 @@ public class NeoForgeCommonInitializer {
 		bus.addListener((ServerAboutToStartEvent e) -> this.serverAboutToStart(e.getServer()));
 		bus.addListener((ServerStoppingEvent e) -> this.serverStopping(e.getServer()));
 		bus.addListener((PlayerEvent.PlayerLoggedOutEvent e) -> FlugelTiaraItem.playerLoggedOut((ServerPlayer) e.getEntity()));
+		bus.addListener((PlayerEvent.PlayerLoggedOutEvent e) -> DeferredManaCharge.onPlayerLoggedOut(e.getEntity()));
 		bus.addListener((PlayerEvent.Clone e) -> ResoluteIvyItem.onPlayerRespawn(e.getOriginal(), e.getEntity(), !e.isWasDeath()));
 		bus.addListener((LevelTickEvent.Post e) -> {
 			if (e.getLevel() instanceof ServerLevel level) {

@@ -36,12 +36,12 @@ import vazkii.botania.api.BotaniaAPI;
 import vazkii.botania.api.brew.Brew;
 import vazkii.botania.api.brew.BrewContainer;
 import vazkii.botania.api.brew.BrewItem;
-import vazkii.botania.api.mana.ManaItemHandler;
 import vazkii.botania.client.core.handler.MiscellaneousModels;
 import vazkii.botania.client.render.AccessoryRenderRegistry;
 import vazkii.botania.client.render.AccessoryRenderer;
 import vazkii.botania.common.brew.BotaniaBrews;
 import vazkii.botania.common.component.BotaniaDataComponents;
+import vazkii.botania.common.impl.mana.DeferredManaCharge;
 import vazkii.botania.common.item.CustomCreativeTabContents;
 import vazkii.botania.common.proxy.Proxy;
 import vazkii.botania.mixin.client.MinecraftAccessor;
@@ -95,7 +95,8 @@ public class TaintedBloodPendantItem extends BaubleItem implements BrewContainer
 			MobEffectInstance effect = brew.getPotionEffects(stack).getFirst();
 			float cost = (float) brew.getManaCost(stack) / effect.getDuration() / (1 + effect.getAmplifier()) * 2.5F;
 			boolean doRand = cost < 1;
-			if (ManaItemHandler.instance().requestManaExact(stack, player, (int) Math.ceil(cost), false)) {
+			// SCEX (audit N2): batched, so the paying mana item isn't rewritten every tick
+			if (DeferredManaCharge.canAfford(stack, player, (int) Math.ceil(cost))) {
 				MobEffectInstance currentEffect = living.getEffect(effect.getEffect());
 				boolean nightVision = effect.getEffect() == MobEffects.NIGHT_VISION;
 				if (currentEffect == null || currentEffect.getDuration() < (nightVision ? 305 : 3)) {
@@ -104,7 +105,7 @@ public class TaintedBloodPendantItem extends BaubleItem implements BrewContainer
 				}
 
 				if (!doRand || Math.random() < cost) {
-					ManaItemHandler.instance().requestManaExact(stack, player, (int) Math.ceil(cost), true);
+					DeferredManaCharge.charge(stack, player, (int) Math.ceil(cost));
 				}
 			}
 		}
