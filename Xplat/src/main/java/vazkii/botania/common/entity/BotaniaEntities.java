@@ -31,7 +31,9 @@ public final class BotaniaEntities {
 			ManaBurstEntity::new, MobCategory.MISC)
 			.sized(0, 0)
 			.updateInterval(10)
-			.clientTrackingRange(6)
+			// SCEX (audit N7): 4 chunks like vanilla projectiles (was 6); bursts are numerous and short-lived, and
+			// each one costs several packets per tracking player. Visual only: bursts further away are not shown.
+			.clientTrackingRange(4)
 			.build(LibEntityNames.MANA_BURST.toString());
 	public static final EntityType<PixieEntity> PIXIE = EntityType.Builder.<PixieEntity>of(PixieEntity::new, MobCategory.MISC)
 			.sized(1, 1)
