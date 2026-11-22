@@ -31,7 +31,7 @@ import vazkii.botania.common.crafting.BlockStateRecipe;
 import vazkii.botania.common.crafting.BotaniaRecipeTypes;
 import vazkii.botania.common.handler.BotaniaSounds;
 import vazkii.botania.common.handler.OrechidManager;
-import vazkii.botania.common.helper.MathHelper;
+import vazkii.botania.common.helper.SectionScanHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -118,12 +118,13 @@ public class OrechidBlockEntity extends FunctionalFlowerBlockEntity {
 	private BlockPos getCoordsToPut() {
 		List<BlockPos> possibleCoords = new ArrayList<>();
 		var matcher = getReplaceMatcher();
-		for (BlockPos pos : MathHelper.aroundPosClosed(getEffectivePos(), getRange(), getRangeY())) {
-			BlockState state = getLevel().getBlockState(pos);
-			if (matcher.test(state)) {
-				possibleCoords.add(pos.immutable());
-			}
-		}
+		// SCEX (audit C-P1-3): this read the whole area every 2 ticks, also when nothing could be converted; skip
+		// sections without convertible blocks. Same positions in the same order, so the random pick is unchanged.
+		BlockPos effectivePos = getEffectivePos();
+		SectionScanHelper.forEachMatching(getLevel(),
+				effectivePos.offset(-getRange(), -getRangeY(), -getRange()),
+				effectivePos.offset(getRange(), getRangeY(), getRange()),
+				matcher, (pos, state) -> possibleCoords.add(pos.immutable()));
 
 		if (possibleCoords.isEmpty()) {
 			return null;
